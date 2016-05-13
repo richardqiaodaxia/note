@@ -1,0 +1,223 @@
+五步轻松搞定Linux下的文件同步(备份)
+
+博客分类： Server配置
+ 
+rsync文件同步配置
+server端：主机名s170
+client端：主机名s156
+目录：/opt/test
+用户：root
+目标：配置rsync使得client端可以把server的/opt/test目录中的文件同步(备份)过来。
+ 
+操作步骤一：确认rsync是否安装
+server端和client端：
+ 
+[root@s156 ~]# yum list rsync 
+Loaded plugins: fastestmirror, security
+Loading mirror speeds from cached hostfile
+ * base: centos.ustc.edu.cn
+ * extras: centos.ustc.edu.cn
+ * updates: centos.ustc.edu.cn
+Installed Packages
+rsync.i386                                                                  3.0.6-4.el5_7.1                                                                   installed
+[root@s156 ~]#
+ 
+如果没有安装，则使用下面的命令安装
+yum install -y rsync
+ 
+ 
+操作步骤二：启动rsync服务
+server端：
+ 
+[root@s170 mysql]# chkconfig rsync --list 
+rsync           关闭
+[root@s170 mysql]# chkconfig rsync on 
+[root@s170 mysql]# chkconfig rsync --list 
+rsync           启用
+[root@s170 mysql]#
+ 
+操作步骤三：设置ssh免登录
+server端：
+ 
+检查server端的.ssh目录
+[root@s170 ~]# cd .ssh/ 
+[root@s170 .ssh]# ls -a
+.  ..  known_hosts
+ 
+此步的目的是为了后面确认~/.ssh目录中文件的变化。
+ 
+ 
+client端：
+ 
+[root@s156 ~]# ssh-keygen -t dsa 
+Generating public/private dsa key pair.
+Enter file in which to save the key (/root/.ssh/id_dsa): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /root/.ssh/id_dsa.
+Your public key has been saved in /root/.ssh/id_dsa.pub.
+The key fingerprint is:
+0b:9d:3e:64:77:17:6a:d8:60:1e:ab:47:42:d1:8e:51 root@s156
+[root@s156 ~]#
+
+其中，/root/.ssh/id_dsa 是私钥，/root/.ssh/id_dsa.pub 是公钥。
+ 
+ 
+现在，将公钥复制到server端。
+[root@s156 .ssh]# ssh-copy-id -i ~/.ssh/id_dsa.pub root@s170 
+21
+ssh: connect to host s170 port 22: Connection refused
+由于s170机器的ssh服务端口已修改，使用默认的22端口访问失败。
+注意：下面的命令行中指定端口的方法。 
+[root@s156 .ssh]# ssh-copy-id -i ~/.ssh/id_dsa.pub "-p 21702 root@s170" 
+21
+root@s170's password: 
+Now try logging into the machine, with "ssh '-p 21702 root@s170'", and check in:
+
+  .ssh/authorized_keys
+
+to make sure we haven't added extra keys that you weren't expecting.
+
+[root@s156 .ssh]#
+ 
+server端：
+ 
+[root@s170 .ssh]# ls -a 
+.  ..  authorized_keys   known_hosts
+[root@s170 .ssh]# cat authorized_keys 
+ssh-dss AAAAB3NzaC1kc3MAAACBAKUqlhhT8mEj39aKgqgziI/TqYEtaz5epS/gWVTZBmtBiY3hgYK1F+/2ItwmKI85ouIuHN4y0axzsPZv27gkYAt+Qz2AZ+QQ4IthN8cNlPQzZ1dcqtoHzFAJYpgB/HcGh2RUl/mpkHXbllOIpr281nyr+Y9LyC/qF0031A0WegyzAAAAFQDroRvSeqS9mpsJmqm0wZpNbFOSGwAAAIA4j9tGmKQ/40fpfJZ+mC5GyW+nbuL9vYHqCujX7mLku7apCq7MXqXR/s2Q4av2T68J6qR2p84obDnqbCN+H3d+7JFblLjST9WSNGMXEiPZB9lTWFV38n6exJ96rSKfeBkdOUO49MYcNX/mMpypmIHqGfpvuXbQKqWFQH7WLxVAYwAAAIBWTyQiWkkLNZkRzKjjcORtYLHss+QfqvbygXNiZSuijZ+mXyjZ9A5CxU781FsU/NmD+i6qtSr5XVyRRuigIJGWAYZ8IcD2Ct18+WPzapgO6/Ptn9I2a+6dV44MbGTtn4Rax0UaSHzWHsg+G3Kvwh9x5gcvmuoSGeamVpmcsEHjZg== root@s156
+[root@s170 .ssh]#
+ 
+注：非对称加密方式下，公钥是可以公开的，而私钥必须妥善保管！
+ 
+ 
+client端：
+ 
+测试一下免登录ssh。
+[root@s156 .ssh]# ssh -p21702 xxx.170 
+Last login: Sun May 20 11:14:50 2012 from 180.168.215.167
+[root@s170 ~]# 
+[root@s170 ~]# ls 
+anaconda-ks.cfg  backup  install.log  install.log.syslog  setup
+[root@s170 ~]# exit 
+logout
+
+Connection to s170 closed.
+[root@s156 .ssh]#
+ 
+操作步骤四：使用rsync同步文件
+server端：
+创建测试文件
+[root@s170 .ssh]# cd /opt/ 
+[root@s170 opt]# mkdir test 
+[root@s170 opt]# cd test 
+[root@s170 test]# ls 
+[root@s170 test]# cat >1.txt 
+hello sync
+[root@s170 test]# 
+[root@s170 test]# ls -l 
+总计 4
+-rw-r--r-- 1 root root 11 05-20 17:10 1.txt
+ 
+
+client端：
+ 
+执行同步
+ 
+[root@s156 .ssh]# cd /opt/ 
+[root@s156 opt]# mkdir test 
+[root@s156 opt]# cd test 
+[root@s156 test]# ls 
+[root@s156 test]# rsync -avR -e ssh s170:/opt/test /     
+ssh: connect to host s170 port 22: Connection refused
+rsync: connection unexpectedly closed (0 bytes received so far) [receiver]
+rsync error: error in rsync protocol data stream (code 12) at io.c(600) [receiver=3.0.6]
+[root@s156 test]# rsync -avR -e "ssh -p 21702" s170:/opt/test /              
+receiving incremental file list
+opt/
+opt/test/
+opt/test/1.txt
+
+sent 38 bytes  received 142 bytes  360.00 bytes/sec
+total size is 11  speedup is 0.06
+[root@s156 test]# ls -l 
+总计 4
+-rw-r--r-- 1 root root 11 05-20 17:10 1.txt
+ 
+server端：
+
+又在server端创建了3.txt文件。
+[root@s170 test]# cat >3.txt 
+ddd
+
+ddd
+[root@s170 test]# 
+[root@s170 test]# ls -l 
+总计 8
+-rw-r--r-- 1 root root 11 05-20 17:10 1.txt
+-rw-r--r-- 1 root root  9 05-20 17:21 3.txt
+[root@s170 test]#
+ 
+client端：
+ 
+注意：这次rsync的参数少了-R，对比一下。 
+[root@s156 test]# rsync -av -e "ssh -p 21702" s170:/opt/test / 
+receiving incremental file list
+test/
+test/3.txt
+
+sent 34 bytes  received 132 bytes  332.00 bytes/sec
+total size is 20  speedup is 0.12
+[root@s156 test]# ls -l 
+总计 8
+-rw-r--r-- 1 root root 11 05-20 17:10 1.txt
+怪了，没有3.txt。
+[root@s156 test]# updatedb
+[root@s156 test]# locate 3.txt 
+/test/3.txt
+[root@s156 test]#
+如果没有-R参数，要像下面这样写。
+[root@s156 test]# rsync -av -e "ssh -p 21702" s170:/opt/test /opt 
+receiving incremental file list
+test/
+test/3.txt
+
+sent 34 bytes  received 132 bytes  332.00 bytes/sec
+total size is 20  speedup is 0.12
+[root@s156 test]# ls 
+1.txt  3.txt
+[root@s156 test]#
+ 
+操作步骤五：使用crontab定期执行同步
+使用 crontab 执行同步的最小时间粒度为 1分钟，也就是说最长可能要1分钟才能将新增的文件同步。
+如果是主备冗余的方式，这问题也不大。
+ 
+client端：
+ 
+crontab -e
+* * * * * rsync -avR -e "ssh -p 21702" s170:/opt/test /
+ 
+现在来测试crontab设置是否有效
+ 
+server端：
+ 
+[root@s170 test]# cat >c.txt
+hello world
+[root@s170 test]#
+
+client端：
+ 
+[root@s156 test]# ls -l 
+总计 12
+-rw-r--r-- 1 root root 11 05-20 17:10 1.txt
+-rw-r--r-- 1 root root  9 05-20 17:21 3.txt
+-rw-r--r-- 1 root root 12 05-20 18:22 c.txt
+[root@s156 test]#
+ 
+成功了！
+ 
+本文链接：http://codingstandards.iteye.com/blog/1539363   转载请注明出处
+ 
+ 
+PS：存在的问题：
+使用crontab方式执行rsync，不能实时同步文件。有文章说道，可以采用inotify实现实时通知同步。下次有空再试验一下。

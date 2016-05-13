@@ -1,0 +1,34 @@
+
+
+A RANDOM PASSWORD HAS BEEN SET FOR THE MySQL root USER !
+You will find that password in '/root/.mysql_secret'.
+
+You must change that password on your first connect,
+no other statement but 'SET PASSWORD' will be accepted.
+See the manual for the semantics of the 'password expired' flag.
+
+Also, the account for the anonymous user has been removed.
+
+In addition, you can run:
+
+  /usr/bin/mysql_secure_installation
+
+which will also give you the option of removing the test database.
+This is strongly recommended for production servers.
+
+See the manual for more instructions.
+
+Please report any problems at http://bugs.mysql.com/
+
+The latest information about MySQL is available on the web at
+
+  http://www.mysql.com
+
+Support MySQL by buying support/licenses at http://shop.mysql.com
+
+WARNING: Found existing config file /usr/my.cnf on the system.
+Because this file might be in use, it was not replaced,
+but was used in bootstrap (unless you used --defaults-file)
+and when you later start the server.
+The new default config file was created as /usr/my-new.cnf,
+please compare it with your file and take the changes you need.

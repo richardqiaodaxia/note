@@ -1,0 +1,109 @@
+【db主机】
+0.查看硬盘信息
+fdisk -l (硬盘信息vdisk1437097908995)
+1.硬盘分区
+fdisk /dev/vda 将这个大硬盘分区
+分区连招 np1回车回车w 根本不分区！！！ 分成1个区
+2.硬盘格式化
+mkfs -t ext3 -c /dev/vda1
+3.挂载到
+mount /dev/vda1 /var/lib/mysql
+【seliunx】
+临时关闭
+setenforce 0
+【gcc安装】
+yum -y install gcc
+yum -y install gcc-c++
+【mysql安装】
+
+1.安装依赖包
+yum -y install libaio.so.1.0.1 libaio.so.1
+yum -y install libaio
+2.先删除原有的mysql
+yum -y remove mysql-libs*
+3.安装包下载
+服务端
+(红帽版)http://downloads.mysql.com/archives/get/file/MySQL-server-5.6.25-1.el6.x86_64.rpm
+(通用版)http://downloads.mysql.com/archives/get/file/MySQL-server-5.6.25-1.linux_glibc2.5.x86_64.rpm
+客户端--here
+(红帽版)http://downloads.mysql.com/archives/get/file/MySQL-client-5.6.25-1.el6.x86_64.rpm
+(通用版)http://downloads.mysql.com/archives/get/file/MySQL-client-5.6.25-1.linux_glibc2.5.x86_64.rpm
+开发库
+(通用版)http://downloads.mysql.com/archives/get/file/MySQL-devel-5.6.25-1.linux_glibc2.5.x86_64.rpm
+4.安装--通用版 红帽版不好用 不知道为啥 奶奶腿的
+rpm -ivh MySQL-server-5.6.25-1.linux_glibc2.5.x86_64.rpm --nodeps
+rpm -ivh MySQL-client-5.6.25-1.linux_glibc2.5.x86_64.rpm --nodeps
+rpm -ivh MySQL-devel-5.6.25-1.linux_glibc2.5.x86_64.rpm --nodeps
+5.执行mysql_install_db
+前提 保证/var/lib/mysql 是空的
+将/var/lib/mysql 授权为mysql.mysql
+     有liunx用户mysql.mysql
+
+
+第一次进入mysql
+设置密码 set password = PASSWORD('XXXX');
+FLUSH PRIVILEGES;
+
+6.去密码验证
+先把服务关了
+mysqld_safe --skip-grant-tables&(最后一个符号一定要有 没有就卡死)
+7.超级暴力修改密码
+use mysql;
+UPDATE user SET Password = PASSWORD('neusoft') WHERE user = 'root';
+FLUSH PRIVILEGES;
+8.允许cms主机访问
+GRANT ALL PRIVILEGES ON *.* TO root@'192.168.10.15' IDENTIFIED BY 'neusoft' WITH GRANT OPTION; 
+9.允许fabu主机访问
+GRANT ALL PRIVILEGES ON *.* TO root@'192.168.10.155' IDENTIFIED BY 'neusoft' WITH GRANT OPTION; 
+
+【iptables】
+iptables -F INPUT
+iptables -I INPUT -p tcp --dport 22 -j ACCEPT
+iptables -I INPUT -p tcp --dport 3306 -j ACCEPT
+iptables 保存
+iptables-save > /etc/sysconfig/iptables
+【todo重启自动挂载，开服务】
+【php依赖包安装】
+1.memcached(yum)
+开启 memcached 服务
+/etc/rc.d/init.d/memcached start
+2.libxml2(yum)
+3.libxml2-devel(yum)
+4.openssl(yum)
+5.openssl-devel(yum)
+6.curl-devel(yum)
+7.libpng-devel(yum)
+【php安装】
+1.安装包下载(5.5最新版)
+wget http://cn2.php.net/get/php-5.5.27.tar.gz/from/this/mirror 
+2.选择安装扩展
+mysql mysqli json pdo_mysql iconv libxml pdo curl gd 
+3.安装包编译
+./configure
+--prefix=/web/php-5.5.27 安装目录
+-–with-config-file-path=/etc/php/ 配置文件路径
+--with-apxs2=/web/httpd-2.4.16/bin/apxs 配置apache模块
+--with-mysql 安装mysql扩展
+--with-mysqli 安装mysqli扩展
+--with-pdo-mysql  pdo_mysql
+--with-openssl 开启openssl扩展
+--enable-ftp 支持ftp
+--enable-zip 支持zip
+--with-iconv 支持iconv
+--with-gd 支持gd
+--with-curl 支持curl
+--enable-mbstring 支持mbstring
+
+./configure --prefix=/web/php-5.5.27 --with-apxs2=/web/httpd-2.4.16/bin/apxs --with-openssl --enable-ftp --enable-zip --with-iconv --with-gd --with-curl --enable-mbstring --with-mysql --with-mysqli --with-pdo-mysql
+
+make && make install
+【php-memcache扩展安装】
+/web/php-5.5.27/bin/pecl install memcache
+修改php.ini
+extension_dir = "/web/php-5.5.27/lib/php/extensions/no-debug-zts-20121212/"
+extension=memcache.so
+【开机自动挂载】
+/etc/rc.d/local.d
+
+
+http://122.115.50.190:8003/index.php?m=content&c=toutiao_api&a=public_web_category

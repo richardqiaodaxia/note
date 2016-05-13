@@ -1,0 +1,17 @@
+1、
+　　encodeURIComponent(”[string]“)
+　　decodeURIComponent(”[encodedString]“)
+
+2、
+　　encodeURI(”[string]“)
+　　decodeURI(”[encodedString]“)
+
+3、
+　　escape(”[string]“)
+　　unescape(”[encodedString]“)
+
+Note:
+　　a、The both of 1 and 2 encodes/decodes in “utf-8″
+　　b、The both of 1 and 2 can not encode _-~*.’
+　　c、The difference of 1 and 2 is 2 can not encoding /?&+=$@,;
+　　d、The 3 encodes/decodes in “ISO Latin”

@@ -1,0 +1,31 @@
+1. 用于通知某个对象该做什么即通知对象去执行某动作
+1.1. 在Objective-C中，方括号还有其它意义：它们用于通知某个对象该做什么。
+例如：
+[shape draw];   //这句话说明，通知对象shape去执行draw这个动作，例如让一个rectangle去画一个矩形。 
+1.2. 在Objective-C中，通知对象执行某种操作，被称为：发送消息。
+例如：
+[shape draw];    //表示向对象shape发送draw消息。
+ 
+2. 创建新对象
+为了创建新对象，我们需要向相应的类发送new消息。
+该类接收并处理完new消息后，我们就会得到一个可以使用的新对象实例了。
+例如：
+id Shape[3];
+Shape[0] = [Circle new];  //向Circle类发送new消息，则创建了新对象，并把该新对象赋给Shape[0].
+ 
+3. 在类中向超类发送消息
+3.1 例如：
+@interface Circle : Shape
+@end // Circle
+ 
+@implementation Circle
+-(void) SetFillColor:(ShapeColor) c {
+    if (c == kRedColor) {
+        c  = kGreenColor;
+    }
+    [super setFillColor:c];  // 向超类Shape发送消息，超类将会执行它的setFillColor方法。
+}
+@end //Circle
+3.2 例如：
+self = [super init];  //作用是，使超类NSObject完成它的初始化工作。并且如果返回一个新对象，
+                      //则需要更新self。

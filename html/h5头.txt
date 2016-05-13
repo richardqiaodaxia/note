@@ -1,0 +1,7 @@
+1.<!DOCTYPE HTML>
+<html lang="en-US"><!--告诉翻译的软件，你用的是什么语言-->
+
+<head>
+    <meta charset="UTF-8">
+    <title>ueditor demo</title>
+</head>

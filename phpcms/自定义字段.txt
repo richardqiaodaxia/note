@@ -1,0 +1,9 @@
+1.content/fields/editor
+指的是editor类型的字段
+2.config.inc.php 配置文件
+3.field_add_form.inc.php 后台添加字段的表单
+4.field_edit_form.inc.php 后台编辑字段的表单
+5.form.inc.php 前端编辑字段的表单
+6.input.inc.php 保存值时处理的函数
+7.output.inc.php 读取值时处理的函数
+8.update.inc.php 更新值时处理的函数

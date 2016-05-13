@@ -1,0 +1,1 @@
+1.指向具体的php.ini文件 添加PHPIniDir="";

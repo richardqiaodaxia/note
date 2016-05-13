@@ -1,0 +1,16 @@
+1.找到Apache2.2\conf目录下的httpd.conf文件，将
+   LoadModule proxy_module modules/mod_proxy.so和
+   LoadModule proxy_http_module modules/mod_proxy_http.so前的注释去掉
+2.httpd.conf文件后添加如下代码：
+Xml代码  收藏代码
+  <VirtualHost *:80>  
+       ServerAdmin test@test.com  
+       ServerName www.test.com  
+       ProxyRequests Off  
+  <Proxy *>  
+       Order deny,allow  
+       Allow from all  
+  </Proxy>  
+       ProxyPass /test http://192.168.1.250:8080/test  
+       ProxyPassReverse /test http://192.168.1.250:8080/test  
+</VirtualHost>

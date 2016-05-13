@@ -1,0 +1,22 @@
+【DataExchange映射工具】
+1.新建映射模板
+2.元数据选择->贵阳网oracle数据源，新贵阳头条数据源
+3.按名称映射
+4.左(oracle)：复制sql条件articleID>最大的id
+5.左(oracle)：抽取方式，快照对比抽取
+6.右(mysql)：加载方式，增量加载
+7.错误处理选忽略
+8.发布
+【重新启动】
+D:\unieap-dataexchange-4.3-win32-dev\dataexchange\bin
+1.shutdown
+2.startup
+【控制台】
+http://192.168.100.51:8081/dxmanager/dataexchange/main/execute.action
+账号：admin 密码：1
+1.进入管理
+2.贵阳网releaselib到贵阳头条
+3.贵阳网PageLayout到贵阳头条
+4.添加到贵阳网到贵阳头条数据导入任务（库到库）
+5.将任务添加到调度中贵阳网数据导入
+6.任务状态变蓝为成功

@@ -1,0 +1,113 @@
+异常处理的基本思想是代码在try代码被调用执行。如果try码块出现错误，我们可以执行一个抛出异常的处理
+
+1、首先php5提供了基本的异常处理类，可直接使用 
+复制代码 代码如下:
+
+<?php 
+class Exception 
+{ 
+protected $message = 'Unknown exception'; // 异常信息 
+protected $code = 0; // 用户自定义异常代码 
+protected $file; // 发生异常的文件名 
+protected $line; // 发生异常的代码行号 
+function __construct($message = null, $code = 0); 
+final function getMessage(); // 返回异常信息 
+final function getCode(); // 返回异常代码 
+final function getFile(); // 返回发生异常的文件名 
+final function getLine(); // 返回发生异常的代码行号 
+final function getTrace(); // backtrace() 数组 
+final function getTraceAsString(); // 已格成化成字符串的 getTrace() 信息 
+/* 可重载的方法 */ 
+function __toString(); // 可输出的字符串 
+} 
+?> 
+
+简单的使用如下：(通过异常，抛出错误信息) 
+复制代码 代码如下:
+
+try { 
+$error = 'my error!'; 
+throw new Exception($error) 
+} catch (Exception $e) { 
+echo $e->getMessage(); 
+} 
+
+2、我们可以扩展此类，方便我们的使用 
+复制代码 代码如下:
+
+class MyException extends Exception 
+{ 
+// 重定义构造器使 message 变为必须被指定的属性 
+public function __construct($message, $code = 0) { 
+// 自定义的代码 
+// 确保所有变量都被正确赋值 
+parent::__construct($message, $code); 
+} 
+// 自定义字符串输出的样式 
+public function __toString() { 
+return __CLASS__ . ": [{$this->code}]: {$this->message}\n"; 
+} 
+public function customFunction() { 
+echo "A Custom function for this type of exception\n"; 
+} 
+} 
+
+异常处理的基本思想是代码在try代码被调用执行。如果try码块出现错误，我们可以执行一个抛出异常的处理。某些编程语言，如java,，在特定情况下将自动抛出异常。在php中，异常必须手动抛出。可以使用如下方式抛出一个异常： 
+　　Throw new Exception(‘message',code); 
+　　Throw 关键字将触发异常处理机制，它是一个语言结构，而不是一个函数，但是必须给它传递一个值。它要求一个接受对象。在最简单的情况下，可以实例化一个内置的Exception类。 
+　　最后，在try代码之后，必须至少给出一个catch代码块。可以将多个catch代码块与一个try代码块进行关联。如果每个catch代码块可以捕获一个不同类型的异常，可以使用多个catch代码块是有意义的。例如，如果想捕获Exception类的异常，代码如下 
+复制代码 代码如下:
+
+Catch(Exception $e) 
+{ 
+//handing exception 
+} 
+Catch代码捕获的对象就是导致异常并传递给throw语句的对象（被throw 语句抛出）。使用Exception 类的实例，是不错的选择。 
+Exception类提供了如下的内置方法： 
+　　Getcode()　　 —返回传递给构造函数的代码。 
+　　GetMessage() —返回传递给构造函数的消息。 
+　　getFile()　　　 　—返回产生异常代码的文件的路径 
+　　getLine()　　　　—返回产生异常的代码所在的行。 
+
+注意： 
+当捕获到一个异常后，try()块里面的后续代码将不会继续执行，而是会尝试查找匹配的“catch”代码块 
+当抛出一个异常后，如果不进行catch处理，则会报“Uncaught exception 'Exception'”错误 
+复制代码 代码如下:
+
+<?php 
+function test($val){ 
+if ($val>100){ 
+throw new Exception("提示信息:您输入的值过大"); 
+} 
+} 
+test(111); 
+?> 
+
+3.当一个异常抛出后，catch语句块可以进行处理也可以不处理 
+以下是我用户注册功能的部分代码 
+复制代码 代码如下:
+
+try{ 
+//check forms filled in 
+if(!filled_out($_POST)){ 
+throw new Exception('你还没有填写表单，请回去填写'); 
+} 
+//check email address not valid 
+if(!check_email($email)){ 
+throw new Exception('邮件的格式不正确'); 
+} 
+//检查密度的长度是否大于6 
+if(strlen($passwd<6)){ 
+throw new Exception('密度的长度应该大于6'); 
+} 
+//检查两次密码是否相等 
+if($passwd!=$passwd1){ 
+throw new Exception('两次密码不一样，请重新输入'); 
+} 
+//检查用户名的长度是否正确 
+if(strlen($username)>16){ 
+throw new Exception('用户名的长度不符,请重新输入'); 
+} 
+} catch(Exception $e){ 
+echo $e->getMessage(); //输出异常信息。 
+} 

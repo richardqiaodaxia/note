@@ -1,0 +1,98 @@
+1.到官网 http://jakarta.apache.org/tomcat 下载 apache-tomcat-7.0.2.tar.gz 安装文件，JDK假设已经安装完毕，接下来直接安装Tomcat。
+http://mirror.bit.edu.cn/apache/tomcat/tomcat-8/v8.0.28/bin/apache-tomcat-8.0.28.tar.gz
+2.安装
+# tar -zxvf apache-tomcat-7.0.2.tar.gz
+# ls //会发现在当前目录下，多出一个文件夹
+apache-tomcat-7.0.2 apache-tomcat-7.0.2.tar.gz
+# mv apache-tomcat-7.0.2 /usr/local/tomcat-7.0.2
+# mv apache-tomcat-7.0.2 /usr/local/tomcat-7.0.2
+3.设置环境变量
+# vi ~/.bashrc
+
+if [ -f /etc/bashrc ]; then
+. /etc/bashrc
+fi
+//增加下面两个内容，然后保存退出：wq 回车
+export CATALINA_BASE=/usr/local/tomcat-7.0.2
+export CATALINA_HOME=/usr/local/tomcat-7.0.2
+
+4.验证是否安装成功
+# echo $CATALINA_HOME
+/usr/local/tomcat-7.0.2
+# echo $CATALINA_BASE
+/usr/local/tomcat-7.0.2
+
+如果显示上面内容，OK，已生效。如果不显示，重启一下系统，再试。
+
+4.启动服务
+
+
+#./startup.sh
+
+http://localhost：8080
+是不是看到tomcat的Web页面了。
+
+如果还没看到，那就把放火墙关了。
+# service iptables stop
+清除防火墙规则：[ 确定 ]
+把 chains 设置为 ACCEPT 策略：filter [ 确定 ]
+正在卸载 Iiptables 模块：[ 确定 ]，
+
+好了。这次绝对没问题了。
+
+5.Tomcat开机自动加载
+# vi /etc/rc.d/rc.local
+//显示如下内容
+
+#!/bin/sh
+#
+# This script will be executed *after* all the other init scripts.
+# You can put your own initialization stuff in here if you don't
+# want to do the full Sys V style init stuff.
+
+touch /var/lock/subsys/local
+
+//增加下面一句话
+/usr/local/tomcat-7.0.2/bin/startup.sh
+
+这样在系统重启后就可以自动启动Tomcat（一定确信JDK安装完并且好用，否则这些都将不好用）
+
+6.关闭服务
+# cd /usr/local/tomcat-7.0.2／bin
+# ./shutdown.sh
+Using CATALINA_BASE: /usr/local/tomcat-7.0.2
+Using CATALINA_HOME: /usr/local/tomcat-7.0.2
+Using CATALINA_TMPDIR: /usr/local/tomcat-7.0.2/temp
+Using JRE_HOME: /usr
+Using CLASSPATH: /usr/local/tomcat-7.0.2/bin/bootstrap.jar:/usr/local/tomcat-7.0.2/bin/tomcat-juli.jar
+
+7.独立环境的测试
+
+  (1) 测试Java的运行状况,如下命令:
+java -version
+javac -version
+看到版本号则表示JDK安装成功
+
+  (2) 测试Apache的运行状况,如下命令:
+/etc/rc.d/init.d/httpd restart ## 重新启动Apache Server
+使用任意一浏览器,输入服务器地址后回车,应该可以看到Apache的默认主页
+
+  (3) 测试Jakarta-Tomcat的运行状况,如下命令:
+进入tomcat安装目录下面的bin目录
+./startup.sh ## 启动jakarta-tomcat-4.1.24服务
+使用任意一浏览器,输入服务器地址和端口号8080后回车,应该可以看到jakarta-tomcat-4.1.24的默认主页
+例如: http://localhost:8080
+./shutdown.sh ## 关闭jakarta-tomcat-4.1.24服务
+
+8.在linux下面安装tomcat后，打开时用户名及密码是什么
+
+在 /usr/local/tomcat-7.0.2/conf/tomcat-users.xml 文件中。编辑这个文件，可以修改用户名和密码,例如：
+
+<role name="manager-gui"/>
+<user name="root" password="admin" roles="manager-gui"/>?
+<role rolename="admin-gui"/>
+<user username="admin" password="admin" roles="admin-gui"/>
+
+用户 root 是管理：Status和Tomcat Manager的。
+用户 admin 是管理：Host Manager的。
+保存后重新启动Tomcat。

@@ -1,0 +1,165 @@
+【cms主机】
+0.查看硬盘信息
+fdisk -l (硬盘信息vdisk1437097972564)
+1.硬盘分区
+fdisk /dev/vda 将这个大硬盘分区
+分区连招 np1回车回车w 根本不分区！！！ 分成1个区
+2.硬盘格式化
+mkfs -t ext3 -c /dev/vda1 格式化成ext4格式会出错 不知道为什么
+3.挂载到/web
+mount /dev/vda1 /web
+4.挂载教程（http://blog.chinaunix.net/uid-25829053-id-3067619.html）
+【seliunx】
+临时关闭
+setenforce 0
+【gcc安装】
+yum -y install gcc
+yum -y install gcc-c++
+【pcre安装】
+wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.36.tar.gz
+./configure --prefix=/web/pcre
+make && make install
+【apache安装】
+1.将下载的php和apache安装包放到software_source
+下载 apache 2.4.16 
+wget http://mirrors.hust.edu.cn/apache/httpd/httpd-2.4.16.tar.gz
+2.依赖包下载
+wget http://mirrors.hust.edu.cn/apache/httpd/httpd-2.4.16-deps.tar.gz
+3.依赖包-安装apr
+./configure --prefix=/web/apr
+make && make install
+4.依赖包-安装apr-util
+./configure --prefix=/web/apr-util --with-apr=/web/apr/bin/apr-1-config
+make && make install
+5.安装apache
+./configure --prefix=/web/httpd-2.4.16 --enable-so --with-apr=/web/apr --with-apr-util=/web/apr-util --with-pcre=/web/pcre/bin/pcre-config
+make && make install
+【iptables】
+iptables -F INPUT
+iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+iptables -I INPUT -p tcp --dport 22 -j ACCEPT
+iptables 保存
+iptables-save > /etc/sysconfig/iptables
+【mysql安装】//为了安装pdo-mysql扩展
+1.安装依赖包
+yum -y install libaio.so.1.0.1 libaio.so.1
+2.先删除原有的mysql
+yum -y remove mysql-libs*
+3.安装包下载
+服务端
+(红帽版)http://downloads.mysql.com/archives/get/file/MySQL-server-5.6.25-1.el6.x86_64.rpm
+(通用版)http://downloads.mysql.com/archives/get/file/MySQL-server-5.6.25-1.linux_glibc2.5.x86_64.rpm
+客户端
+(红帽版)http://downloads.mysql.com/archives/get/file/MySQL-client-5.6.25-1.el6.x86_64.rpm
+(通用版)http://downloads.mysql.com/archives/get/file/MySQL-client-5.6.25-1.linux_glibc2.5.x86_64.rpm
+开发库
+(通用版)http://downloads.mysql.com/archives/get/file/MySQL-devel-5.6.25-1.linux_glibc2.5.x86_64.rpm
+4.安装--通用版 红帽版不好用 不知道为啥 奶奶腿的
+rpm -ivh MySQL-server-5.6.25-1.linux_glibc2.5.x86_64.rpm --nodeps
+rpm -ivh MySQL-client-5.6.25-1.linux_glibc2.5.x86_64.rpm --nodeps
+【php依赖包安装】
+1.memcached(yum)
+开启 memcached 服务
+memcached -d -p 11211 -u root
+/etc/rc.d/init.d/memcached start
+2.libxml2(yum)
+3.libxml2-devel(yum)
+4.openssl(yum)
+5.openssl-devel(yum)
+6.curl-devel(yum)
+7.libpng-devel(yum)
+v
+【添加服务】
+/etc/init.d/*
+【todo重启默认设置】
+
+mysql -h主机IP -u 用户名 -p 密码
+【todo重启自动挂载，开服务】
+【php依赖包安装】
+1.memcached(yum)
+开启 memcached 服务
+/etc/rc.d/init.d/memcached start
+2.libxml2(yum)
+3.libxml2-devel(yum)
+4.openssl(yum)
+5.openssl-devel(yum)
+6.curl-devel(yum)
+7.libpng-devel(yum)
+【php安装 作废】
+1.安装包下载(5.5最新版)
+wget http://cn2.php.net/get/php-5.5.27.tar.gz/from/this/mirror 
+2.选择安装扩展
+mysql mysqli json pdo_mysql iconv libxml pdo curl gd 
+3.安装包编译
+./configure
+--prefix=/web/php-5.5.27 安装目录
+-–with-config-file-path=/etc/php/ 配置文件路径
+--with-apxs2=/web/httpd-2.4.16/bin/apxs 配置apache模块
+--with-mysql 安装mysql扩展
+--with-mysqli 安装mysqli扩展
+--with-pdo-mysql  pdo_mysql
+--with-openssl 开启openssl扩展
+--enable-ftp 支持ftp
+--enable-zip 支持zip
+--with-iconv 支持iconv
+--with-gd 支持gd
+--with-curl 支持curl
+--enable-mbstring 支持mbstring
+
+./configure --prefix=/web/php-5.5.27 --with-apxs2=/web/httpd-2.4.16/bin/apxs --with-openssl --enable-ftp --enable-zip --with-iconv --with-gd --with-curl --enable-mbstring --with-mysql --with-mysqli --with-pdo-mysql
+
+make && make install
+【php-memcache扩展安装】
+/web/php-5.5.27/bin/pecl install memcache
+修改php.ini
+extension_dir = "/web/php-5.5.27/lib/php/extensions/no-debug-zts-20121212/"
+extension=memcache.so
+【漏洞补丁】
+1.测试是否存在漏洞，执行以下命令：
+env t='() { :;}; echo You are vulnerable.' bash -c "true"
+如果显示You are vulnerable，很遗憾，必须立即打上安全补丁修复
+
+yum -y update bash
+【添加gd对jpeg的支持(源码编译gd库,不支持jpeg)】
+1.yum install libjpeg-devel freetype-devel libpng-devel
+2.wget http://www.ijg.org/files/jpegsrc.v8b.tar.gz
+3.tar -zxvf jpegsrc.v8b.tar.gz 
+4.cd jpeg-8b
+
+4.1 ./configure --prefix=/usr/local/jpeg --enable-shared --enable-static 
+make && make install
+
+5.  进入php/ext/gd 目录后执行  注意下面的 /usr/local/php/  是你服务器 php的安装路径。我的是 这个路径就写成这样了
+
+5.1 /web/php-5.6.14/bin/phpize
+
+5.3 ./configure --with-php-config=/web/php-5.6.14/bin/php-config --with-jpeg-dir=/usr/local/jpeg/
+
+5.4 make && make install
+
+别研究了 得重新编译php 去掉gd扩展 你妹啊！！！！！！！！！！！
+【php5.6.14安装】
+1.安装包下载(5.6最新版)
+
+2.选择安装扩展
+mysql mysqli json pdo_mysql iconv libxml pdo curl (注意不编译gd库)
+3.安装包编译
+./configure
+--prefix=/web/php-5.5.27 安装目录
+-–with-config-file-path=/etc/php/ 配置文件路径
+--with-apxs2=/web/httpd-2.4.16/bin/apxs 配置apache模块
+--with-mysql 安装mysql扩展
+--with-mysqli 安装mysqli扩展
+--with-pdo-mysql  pdo_mysql
+--with-openssl 开启openssl扩展
+--enable-ftp 支持ftp
+--enable-zip 支持zip
+--with-iconv 支持iconv
+--with-curl 支持curl
+--enable-mbstring 支持mbstring
+
+内存小于1g 添加 --disable-fileinfo
+./configure --prefix=/web/php-5.6.14 --with-config-file-path=/etc/php-5.6.14/ --with-apxs2=/web/httpd-2.4.16/bin/apxs --with-mysql --with-mysqli --with-pdo-mysql  --with-openssl --enable-ftp --enable-zip --with-iconv --with-curl --enable-mbstring --disable-fileinfo
+
+./configure --prefix=/web/php-5.4.43 --with-config-file-path=/etc/php-5.4.43/ --with-apxs2=/web/httpd-2.4.16/bin/apxs --with-mysql --with-mysqli --with-pdo-mysql  --with-openssl --enable-ftp --enable-zip --with-iconv --with-curl --enable-mbstring
+

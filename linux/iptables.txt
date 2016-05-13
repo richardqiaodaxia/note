@@ -1,0 +1,17 @@
+1.iptables 关闭 
+service iptables stop;
+service iptables save;保存规格
+service iptables restart;重启iptables
+添加规则
+开启22端口
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT   
+开启80端口
+iptables -A INPUT -p tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT
+允许本地访问 
+iptables -A INPUT -p tcp -s 127.0.0.1 -j ACCEPT
+允许内网访问 
+iptables -A INPUT -p tcp -s 10.3.44.24 -j ACCEPT
+允许公司电脑访问
+iptables -A INPUT -p tcp -s 218.25.32.210 -j ACCEPT
+然后再执行  这句话是默认drop。
+iptables -P INPUT DROP

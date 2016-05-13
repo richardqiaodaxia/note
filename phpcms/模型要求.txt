@@ -1,0 +1,1 @@
+1.所有模型都有固定位置static_position,status,listorder,inputtime,link_title,thumb,image_set

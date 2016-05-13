@@ -1,0 +1,6 @@
+1.下载apache2.4
+http://httpd.apache.org/docs/current/platform/windows.html#down
+选apachehaus
+2.安装apache2.4 安装服务 httpd.exe -k install
+3.启动服务 httpd.exe -k install
+4.缺少vcruntime140.dll 上网下一个就好了

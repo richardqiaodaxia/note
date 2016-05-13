@@ -1,0 +1,6 @@
+1.在文章中取图片的
+if(preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
+	$systeminfo['thumb'] = $matches[3][$auto_thumb_no];
+}
+
+5bd1ba7dd5216ebcb05c34ca4e8505e6

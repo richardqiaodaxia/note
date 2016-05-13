@@ -1,0 +1,62 @@
+【fabu主机】
+公网ip查询
+curl http://members.3322.org/dyndns/getip
+0.查看硬盘信息
+fdisk -l (硬盘信息vdisk1437097871932)
+1.硬盘分区
+fdisk /dev/vda 将这个大硬盘分区
+分区连招 np1回车回车w 根本不分区！！！ 分成1个区
+2.硬盘格式化
+mkfs -t ext3 -c /dev/vda1
+3.挂载到/web
+mount /dev/vda1 /web
+4.挂载教程（http://blog.chinaunix.net/uid-25829053-id-3067619.html）
+【seliunx】
+临时关闭
+setenforce 0
+【gcc安装】
+yum -y install gcc
+yum -y install gcc-c++
+yum -y install make
+【pcre安装】
+wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.36.tar.gz
+./configure --prefix=/web/pcre
+make && make install
+
+【apache安装】
+1.将下载的php和apache安装包放到software_source
+下载 apache 2.4.17 
+wget http://mirrors.hust.edu.cn/apache/httpd/httpd-2.4.17.tar.gz
+2.依赖包下载
+wget http://mirrors.hust.edu.cn/apache/httpd/httpd-2.4.17-deps.tar.gz
+
+
+3.依赖包-安装apr 在 httpd/srclib/apr
+./configure --prefix=/web/apr
+make && make install
+4.依赖包-安装apr-util 在 httpd/srclib/apr-util
+./configure --prefix=/web/apr-util --with-apr=/web/apr/bin/apr-1-config
+make && make install
+5.安装apache
+./configure --prefix=/web/httpd-2.4.16 --enable-so --with-apr=/web/apr --with-apr-util=/web/apr-util --with-pcre=/web/pcre/bin/pcre-config
+make && make install
+【ftp安装】
+yum -y install vsftpd
+【ftp用户】
+ftpusers    该文件用来指定那些用户不能访问ftp服务器。
+user_list   该文件用来指示的默认账户在默认情况下也不能访问ftp
+/etc/vsftpd/vsftpd.conf   vsftpd的主配置文件
+1.创建cms用户
+useradd -d /web/www/cms cms 
+2.设置密码
+passwd cms 设置成neusoft
+3、更改用户相应的权限设置：
+usermod -s /sbin/nologin cms //限定用户cms不能telnet，只能ftp，不能登录
+【ftp配置文件】
+pasv_promiscuous=YES
+1.允许上传
+chmod 755 /web/www/cms(这个地方有点不明白，但先不管)
+需要解决问题 为什么用cms账户登录 算匿名登录
+【iptables】
+暂时关闭 等有空的时候再研究
+【todo重启自动挂载，开服务】

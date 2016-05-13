@@ -1,0 +1,21 @@
+不可以省略。在javascript中，没有使用var声明的变量都被当成全局变量来处理。
+
+因此在写javascript脚本时，尽量在变量前增加var声明，以确保变量不会被当成全局变量重复应用。
+尤其是在存在递归调用的函数中，特别要注意用var声明循环变量，否则的话递归调用会因为变量被递归修改而产生意想不到的错误，很难调试和查找。
+
+https://api.weibo.com/oauth2/default.html
+
+http://localhost/svn_cloudcms2/behind/websites/test_c/index.php?m=admin&c=new_setting&a=public_weibo_get_token
+
+http://localhost/svn_cloudcms2/behind/websites/test_c/index.php?m=admin&c=new_setting&a=public_weibo_get_token
+
+{"access_token":"2.00jE93zFZMsQGB50e4aef101Ygf_2C","remind_in":"157679999","expires_in":157679999,"uid":"5487371797"}
+
+
+{"error":"redirect_uri_mismatch","error_code":21322,"request":"/oauth2/access_token","error_uri":"/oauth2/access_token"}
+
+{"error":"unsupport mediatype (multipart/form-data;boundary=------------------------4ddd698add4c535c)","error_code":10007,"request":"/2/statuses/update.json"}
+
+{"error":"unsupport mediatype (multipart/form-data;boundary=)","error_code":10007,"request":"/2/statuses/update.json"}
+
+D:/www/cloudcms/websites/test_c/uploadfile/ueditor/php/upload/image/20151113/1447382264125558.jpg

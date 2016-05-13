@@ -1,0 +1,1 @@
+file_get_contents — 将整个文件读入一个字符串

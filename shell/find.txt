@@ -1,0 +1,1 @@
+1.find 文件夹名 -name "*php*"

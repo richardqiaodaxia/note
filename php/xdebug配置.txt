@@ -1,0 +1,22 @@
+[XDebug]  
+;zend_extension = "D:\php-5.6.13\ext\php_xdebug-2.3.3-5.6-vc11-nts-x86_64.dll"
+zend_extension = "D:\php-5.6.13\ext\php_xdebug-2.3.3-5.6-vc11-x86_64.dll"  
+xdebug.auto_trace = on
+xdebug.auto_profile = on
+xdebug.collect_params = on
+xdebug.collect_return = on
+xdebug.profiler_enable = on
+xdebug.trace_output_dir = "/tmp"
+xdebug.profiler_output_dir ="/tmp"
+xdebug.dump.GET = *
+xdebug.dump.POST = *
+xdebug.dump.COOKIE = *
+xdebug.dump.SESSION = *
+xdebug.var_display_max_data = 4056
+xdebug.var_display_max_depth = 5
+xdebug.remote_enable=on       
+xdebug.remote_handler=dbgp
+xdebug.remote_host="localhost"
+xdebug.remote_port=9010
+xdebug.remote_autostart=1
+xdebug.idekey="PHPSTORM"

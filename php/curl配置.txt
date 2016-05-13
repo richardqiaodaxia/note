@@ -1,0 +1,9 @@
+1.php 5.6 win 64位
+
+Move to Windows\system32 folder:
+libssh2.dll, php_curl.dll, ssleay32.dll, libeay32.dll
+
+Move to Apache24\bin folder
+libssh2.dll
+
+Uncomment extension=php_curl.dll

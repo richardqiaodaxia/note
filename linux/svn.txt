@@ -1,0 +1,2 @@
+Linux下svn的add命令使用方法
+svn add — 添加文件、目录或符号链。

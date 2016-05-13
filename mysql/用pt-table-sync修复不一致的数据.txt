@@ -1,0 +1,75 @@
+上一篇用pt-table-checksum校验数据一致性介绍了校验主从数据是否一致的方法，当确定主从数据不一致后，就要考虑如何修复。这里推荐percona-toolkit的另外一个重要工具：pt-table-sync。
+
+percona-toolkit的安装及简介  http://www.linuxidc.com/Linux/2014-11/109698.htm
+
+percona-toolkit 之 【pt-summary】、【pt-mysql-summary】、【pt-config-diff】、【pt-variable-advisor】说明  http://www.linuxidc.com/Linux/2014-08/104929.htm
+
+pt-table-sync简介
+
+顾名思义，它用来修复多个实例之间数据的不一致。它可以让主从的数据修复到最终一致，也可以使通过应用双写或多写的多个不相关的数据库实例修复到一致。同时它还内部集成了pt-table-checksum的校验功能，可以一边校验一边修复，也可以基于pt-table-checksum的计算结果来进行修复。
+
+工作原理
+
+1. 单行数据checksum值的计算
+
+计算逻辑与pt-table-checksum一样，也是先检查表结构，并获取每一列的数据类型，把所有数据类型都转化为字符串，然后用concat_ws()函数进行连接，由此计算出该行的checksum值。checksum默认采用crc32计算。
+
+2. 数据块checksum值的计算
+
+同pt-table-checksum工具一样，pt-table-sync会智能分析表上的索引，然后把表的数据split成若干个chunk，计算的时候以chunk为单位。可以理解为把chunk内所有行的数据拼接起来，再计算crc32的值，即得到该chunk的checksum值。
+
+3. 坏块检测和修复
+
+前面两步，pt-table-sync与pt-table-checksum的算法和原理一样。再往下，就开始有所不同：
+
+pt-table-checksum只是校验，所以它把checksum结果存储到统计表，然后把执行过的sql语句记录到binlog中，任务就算完成。语句级的复制把计算逻辑传递到从库，并在从库执行相同的计算。pt-table-checksum的算法本身并不在意从库的延迟，延迟多少都一样计算(有同事对此不理解，可以参考我的前一篇文章)，不会影响计算结果的正确性(但是我们还是会检测延迟，因为延迟太多会影响业务，所以总是要加上—max-lag来限流)。 
+pt-table-sync则不同。它首先要完成chunk的checksum值的计算，一旦发现主从上同样的chunk的checksum值不同，就深入到该chunk内部，逐行比较并修复有问题的行。其计算逻辑描述如下(以修复主从结构的数据不一致为例，业务双写的情况修复起来更复杂—因为涉及到冲突解决和基准选择的问题，限于篇幅，这里不介绍)：
+
+对每一个从库，每一个表，循环进行如下校验和修复过程。
+对每一个chunk，在校验时加上for update锁。一旦获得锁，就记录下当前主库的show master status值。
+在从库上执行select master_pos_wait()函数，等待从库sql线程执行到show master status得到的位置。以此保证，主从上关于这个chunk的内容均不再改变。
+对这个chunk执行checksum，然后与主库的checksum进行比较。
+如果checksum相同，说明主从数据一致，就继续下一个chunk。
+如果checksum不同，说明该chunk有不一致。深入chunk内部，逐行计算checksum并比较(单行的checksum的比较过程与chunk的比较过程一样，单行实际是chunk的size为1的特例)。
+如果发现某行不一致，则标记下来。继续检测剩余行，直到这个chunk结束。
+对找到的主从不一致的行，采用replace into语句，在主库执行一遍以生成该行全量的binlog，并同步到从库，这会以主库数据为基准来修复从库；对于主库有的行而从库没有的行，采用replace在主库上插入(必须不能是insert)；对于从库有而主库没有的行，通过在主库执行delete来删除(pt-table-sync强烈建议所有的数据修复都只在主库进行，而不建议直接修改从库数据；但是也有特例，后面会讲到)。
+直到修复该chunk所有不一致的行。继续检查和修复下一个chunk。
+直到这个从库上所有的表修复结束。开始修复下一个从库。
+重要选项
+
+安全选项
+
+—[no]check-triggers 检查是否有触发器，有则警告 
+—[no]foreign-key-checks 默认检查主外键约束，有则警告 
+—[no]unique-checks 检查是否有唯一索引，无则警告
+
+过滤选项
+
+—ignore-databases 
+—ignore-engines 
+—ignore-tables
+
+其他选项
+
+—replicate=s 与pt-table-checksum结合起来，只修复，而不校验。使用pt-table-checksum之前校验的结果 
+—bidirectional 双向同步。通常都以主库的数据为准，如果开启双向同步，就要定义冲突解决规则，会比较复杂
+
+用法举例
+
+假设10.55.55.55是主库，10.73.73.73是它的从库，端口在3306。
+1. 先校验： 
+PTDEBUG=1 ./pt-table-checksum --user=user --password=pass --host=10.55.55.55 --port=3306 --databases=elink --tables=my_cms_10 --recursion-method=processlist 2. 根据校验结果，只修复10.73.73.73从库与主库不一致的地方：
+PTDEBUG=1 ./pt-table-sync --execute --replicate percona.checksums --sync-to-master h=10.73.73.73,P=3306,u=user,p=pass 3. 修复后，再重新校验一次。执行第一步的语句即可。 
+4. 检查修复结果： 登陆到10.73.73.73，执行如下sql语句返回若为空，则说明修复成功： select * from percona.checksums where master_cnt <> this_cnt OR master_crc <> this_crc OR ISNULL(master_crc) <> ISNULL(this_crc)
+
+注意事项
+
+采用replace into来修复主从不一致，必须保证被replace的表上有主键或唯一键，否则replace into退化成insert into，起不到修复的效果。这种情况下pt-table-sync会采用其他校验和修复算法，但是效率非常低，例如对所有列的group by然后求count(*)(表一定要有主键！)。
+主从数据不一致需要通过replace into来修复，该sql语句必须是语句级。pt-table-sync会把它发起的所有sql语句都设置为statement格式，而不管全局的binlog_format值。这在级联A-B-C结构中，也会遇到pt-table-checksum曾经遇到的问题，引起行格式的中继库的从库卡库是必然。不过pt-table-sync默认会无限递归的对从库的binlog格式进行检查并警告： 
+
+由于pt-table-sync每次只能修复一个表，所以如果修复的是父表，则可能导致子表数据连带被修复，这可能会修复一个不一致而引入另一个不一致；如果表上有触发器，也可能遇到同样问题。所以在有触发器和主外键约束的情况下要慎用。pt-table-sync工具同样也不欢迎主从异构的结构。pt-table-sync工具默认会进行先决条件的检查。
+pt-table-sync在修复过程中不能容忍从库延迟，这正好与pt-table-checksum相反。如果从库延迟太多，pt-table-sync会长期持有对chunk的for update锁，然后等待从库的master_pos_wait执行完毕或超时。从库延迟越大，等待过程就越长，主库加锁的时间就越长，对线上影响就越大。因此要严格设置max-lag。
+对从库数据的修复通常是在主库执行sql来同步到从库。因此，在有多个从库时，修复某个从库的数据实际会把修复语句同步到所有从库。数据修复的代价取决于从库与主库不一致的程度，如果某从库数据与主库非常不一致，举例说，这个从库只有表结构，那么需要把主库的所有数据重新灌一遍，然后通过binlog同步，同时会传递到所有从库。这会给线上带来很大压力，甚至拖垮集群。正确的做法是，先用pt-table-checksum校验一遍，确定不一致的程度：如果不同步的很少，用pt-table-sync直接修复；否则，用备份先替换它，然后用pt-table-sync修复。 说明： 这实际提供了一种对myisam备份的思路：如果仅有一个myisam的主库，要为其增加从库，则可以：先mysqldump出表结构到从库上，然后启动同步，然后用pt-table-sync来修复数据。
+总结
+
+pt-table-sync工具很复杂也很强大。它修改数据库的内容，所以可能造成安全事故。为了安全，建议：使用pt-table-checksum定期检测数据的一致性，并手动重建损坏较为严重的从库，最后才用pt-table-sync修复剩下的从库。

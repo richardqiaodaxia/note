@@ -1,0 +1,1 @@
+rpm -qc app_name

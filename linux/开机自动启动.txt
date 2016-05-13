@@ -1,0 +1,2 @@
+1./etc/rc.d/rc.local 设置开机自动启动脚本
+2.chmod +x rc.local 设置执行权限 

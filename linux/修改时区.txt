@@ -1,0 +1,8 @@
+只是在命令最后提示你可以执行TZ='Asia/Shanghai'; export TZ 并将这行命令添加到.profile中，然后退出并重新登录。参考下图中date命令看到的结果，最终时区显示为CST，即中国标准时间
+
+root/.bash_profile
+
+编辑 导入
+TZ='Asia/Shanghai'
+
+export TZ

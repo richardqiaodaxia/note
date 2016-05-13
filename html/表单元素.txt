@@ -1,0 +1,14 @@
+1.多数的表单元素都是行级元素 ：select
+2.
+<select>
+	<option value="0">请选择</option>
+	<option value="1">选择一</option>
+</select>
+3.fieldset
+<form>
+  <fieldset>
+    <legend>health information</legend>
+    height: <input type="text" />
+    weight: <input type="text" />
+  </fieldset>
+</form>

@@ -1,0 +1,26 @@
+如何在CentOS 7 / RHEL 7 运行单用户模式进行root的密码重置 ...  [复制链接]
+发表于 2014-9-16 18:50 | 来自  51CTO网页 [只看他] 楼主
+步骤一，开机时随便按下键盘，进入以下菜单   
+
+步骤二： 选择第一项，按e键进行修改
+
+
+步骤三，定位到 ro（
+linux 16 or linuxefi
+)
+
+ 
+
+
+步骤四：把ro改成 “rw init=/sysroot/bin/sh”. 完成之后按 “Ctrl+x”
+  
+
+现在你可以进入单用户模式了
+
+依次输入以下命令进行root密码修改，修改完成之后强制重启即可。 
+
+chroot /sysroot/
+passwd root
+touch /.autorelabel
+
+]   

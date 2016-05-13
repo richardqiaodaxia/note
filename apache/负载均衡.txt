@@ -1,0 +1,76 @@
+实战，利用apache来做集群，实现负载均衡
+张映 发表于 2010-06-21
+分类目录： apache/nginx
+标签：apache, 分布式, 负载均衡, 集群
+以前用ha,lvs做过负载均衡，我知道apache可以做负载均衡，一直没有做。所以今天我尝试用apache做了一次负载均衡。感觉还可以，以后如果有公司非要让我用apache来做负载均衡，也不要花很多时间去研究了。
+一，查看有没有安装过mod_proxy之类的东西
+[zhangy@BlackGhost ~]$ /usr/local/apache2/bin/httpd -l
+如果没有发现mod_proxy，我们就到apache安装目录下的modules里面看看有没有mod_proxy.so文件，如果都没有，则说明没有加载负载均衡的模块
+二，安装mod_proxy,proxy_balancer_module等
+
+进入apache的解压目录，就是你从网上下载下来的压缩文件，然后解压产生的目录。
+cd   apache的解压目录/modules/proxy
+[root@BlackGhost proxy]# /usr/local/apache2/bin/apxs -c -i mod_proxy.c proxy_util.c
+注意：上面如果不加proxy_util.c的话,LoadModule proxy_module modules/mod_proxy.so会报错的，提示你找不到mod_proxy.so文件
+[root@BlackGhost proxy]# /usr/local/apache2/bin/apxs -c -i mod_proxy_balancer.c
+[root@BlackGhost proxy]# /usr/local/apache2/bin/apxs -c -i mod_proxy_http.c
+出现下面的东西说明装好了。
+———————————————————————-
+Libraries have been installed in:
+/usr/local/apache2/modules
+#要安装的模块装好了
+[zhangy@BlackGhost apache2]$ ls ./modules/
+httpd.exp     mod_fastcgi.so    mod_proxy.so           mod_rewrite.so
+libphp5.so    mod_fcgid.so      mod_proxy_balancer.so
+mod_cache.so  mod_mem_cache.so  mod_proxy_http.so
+三，配置httpd.conf，测试负载均衡
+1，根据请求数（默认），平均分配
+LoadModule proxy_module modules/mod_proxy.so
+LoadModule proxy_balancer_module modules/mod_proxy_balancer.so
+LoadModule proxy_http_module modules/mod_proxy_http.so
+
+ProxyRequests Off
+<Proxy balancer://clusterphpinfo>
+BalancerMember http://192.168.18.2:10004
+BalancerMember http://192.168.18.2:10000
+</Proxy>
+ProxyPass /test2 balancer://clusterphpinfo stickysession=STICK_PORT_TOKEN nofailover=On
+ProxyPassReverse /test2 balancer://clusterphpinfo
+
+<Location /balancer-manager>
+SetHandler balancer-manager
+Order Deny,Allow
+Allow from all
+#Allow from 192.168.18.*
+</Location>
+配置说明：在httpd.conf里面添加以上配置
+1，为什么我这里要用/test2而不是／，因为在这里用／会和documentroot冲突，因为监听的都是80端口。2，stickysession 从字面上看，严格的session，加上他说明实现严格的session的负载均衡，根据个人需要吧。
+3，其实像这样的负载均衡，其实就是反向代理，http://localhost/test2起到了连接池的作用，如果你访问http://localhost/test2/index.php，他其实访问的http://192.168.18.2:10004/index.php或者是http://192.168.18.2:10000/index.php
+4，<Location /balancer-manager></Location>中间的内容是用监测负载均衡的情况的，可 以放到正式服务器，也可以不放。
+访问http://localhost/test2/balancer-manager看下图：
+apache负载均衡
+apache负载均衡
+图片说明：从上图我们可以看出，负载均衡算法是根据请求数（byrequests），平均分配到二个虚拟主机。
+2，给节点加权重，根据挂起的请求数进行平衡
+LoadModule proxy_module modules/mod_proxy.so
+LoadModule proxy_balancer_module modules/mod_proxy_balancer.so
+LoadModule proxy_http_module modules/mod_proxy_http.so
+
+ProxyRequests Off
+<Proxy balancer://clusterphpinfo>
+BalancerMember http://192.168.18.2:10004 loadfactor=5
+BalancerMember http://192.168.18.2:10000 loadfactor=1
+ProxySet lbmethod=bytraffic
+</Proxy>
+ProxyPass /test2 balancer://clusterphpinfo stickysession=STICK_PORT_TOKEN nofailover=On
+ProxyPassReverse /test2 balancer://clusterphpinfo
+
+<Location /balancer-manager>
+SetHandler balancer-manager
+Order Deny,Allow
+Allow from all
+#Allow from 192.168.18.*
+</Location>
+配置说明：说一下不同的
+1，平衡算法，由byrequests变成bytraffic
+2，由平均分配变成非平均分配

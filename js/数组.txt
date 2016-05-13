@@ -1,0 +1,12 @@
+var myArray=new Array()
+有两种向数组赋值的方法（你可以添加任意多的值，就像你可以定义你需要的任意多的变量一样）。
+1:
+var mycars=new Array()
+mycars[0]="Saab"
+mycars[1]="Volvo"
+mycars[2]="BMW"
+也可以使用一个整数自变量来控制数组的容量：
+var mycars=new Array(3)
+mycars[0]="Saab"
+mycars[1]="Volvo"
+mycars[2]="BMW"
