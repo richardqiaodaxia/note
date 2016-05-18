@@ -1,0 +1,2 @@
+ps axu 查询全部线程
+kill -9 PID 关闭线程
