@@ -1,0 +1,12 @@
+1.推荐统计方式更新
+/api/tag_record.php
+/model/news_tag_log_model.class.php
+2.推送列表
+
+后台运行->添加菜单
+中文:推送日志
+对应英文:push_log
+模块名:push_log
+文件名:index
+方法:log_list
+提交

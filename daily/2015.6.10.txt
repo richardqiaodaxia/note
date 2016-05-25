@@ -1,0 +1,3 @@
+﻿1.mine type 资源媒体类型
+2.htmlentities() 将特殊符号转换成html实体
+3.addslash 仿sql注入

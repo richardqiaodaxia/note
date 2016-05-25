@@ -1,0 +1,4 @@
+﻿1.替换一个字符 str_replace()
+2.批量替换 preg_replace();
+3.如果方法依赖性高，重用性就低。
+4.pass-by-reference 已经过时

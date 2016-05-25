@@ -1,0 +1,5 @@
+﻿1.sql语句会类型转换
+2.index.php?num=3; $_GET['num'] = '3';而不是 数字型的3
+3.phpunit 配置 先下载phpunit.phar 放在php.exe同目录下 命令行 echo @php "%~dp0phpunit.phar" %* > phpunit.cmd
+4.phpunit ./ 测试当前目录下 每个TestCase类中的test***方法 测试当前目录下***Test.php文件
+5.composer.phar 下载地址 https://getcomposer.org/download/1.0.0-alpha10/composer.phar

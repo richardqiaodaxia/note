@@ -1,0 +1,21 @@
+﻿1.用@ 如果用 set_error_handler() 设定了自定义的错误处理函数，仍然会被调用，
+但是此错误处理函数可以（并且也应该）调用 error_reporting()，而该函数在出错语句前有 @ 时将返回 0。
+2.用@ 的情况在 建议将@符号用于那些执行失败时不会影响脚本整体功能的函数
+3.<?php
+function &test(){ 
+ static $b=0;//申明一个静态变量 
+ $b=$b+1; 
+ echo $b; 
+ return $b; 
+}
+$a=test();//这条语句会输出$b的值为１ 
+$a=5; $a=test();//这条语句会输出$b的值为2
+$a=&test();//这条语句会输出$b的值为3 
+$a=5; $a=test();//这条语句会输出$b的值为6
+?>研究一下http://www.bitscn.com/pdb/php/201409/320027.html
+4.session_set_save_handler — 设置用户自定义会话存储函数
+5.PHP sort() 函数用于对数组单元从低到高进行排序，如果成功则返回 TRUE，失败则返回 FALSE。
+6.array_keys() 函数返回包含数组中所有键名的一个新数组
+7.The value of mysql_insert_id() is affected only by statements issued within the current client connection
+8.composer 是帮你为项目自动安装所依赖的开发包 比如说 一个thinkphp 项目 自动安装thinkphp
+9.var_export — 输出或返回一个变量的字符串表示

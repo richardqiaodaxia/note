@@ -1,0 +1,17 @@
+﻿1.create trigger triggerName
+
+after/before insert/update/delete on 表名
+
+for each row   #这句话在mysql是固定的
+
+begin
+
+sql语句;
+
+end;
+2.if(条件,当真的时候执行,当假的时候执行) 函数
+3.select case when a.类型=‘教师’ then b.教师名字 
+              when a.类型=‘教室’ then c.教室名称
+from a left join b on a.id=b.id
+       left join c on a.id=c.id
+SELECT CASE WHEN 1>0 THEN 'true' ELSE 'false' END;

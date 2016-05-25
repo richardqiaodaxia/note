@@ -1,0 +1,13 @@
+1.news表中的字段status=99表示已发布
+2.SQL select * from (SELECT * FROM `hilizi_news_data` a INNER JOIN `hilizi_news` b ON a.id = b.id)
+where status = 99 and static_postion = 0 and news_tag 
+3.select * from hilizi_news_data Where news_tags REGEXP '28|29|30' order by news_tags desc、
+4.创建视图
+5.create view hilizi_view_news as SELECT * FROM `hilizi_news_data` a INNER JOIN `hilizi_news` b ON a.id = b.id
+6.SELECT a.`id`, `catid`, `typeid`, `title`, `style`, `thumb`, `keywords`, `description`, `posids`, `url`, `listorder`, `status`, `sysadd`, `islink`, `username`, `inputtime`, `updatetime`, `iscopy`, `from`, `userid`, `pass_time`, `timing`, `link_title`, `list_style`, `teaser`, `allow_comment`, `content_type`, `static_position`, `angel`,b.news_tags FROM `hilizi_news` a inner join `hilizi_news_data` b on a.id=b.id
+7.array[] = "" 向数组中添加元素
+8.DATE_FORMAT(now(),'%Y%m') 取得当前时间的格式201504	
+9.SELECT DATE_FORMAT(DATE_SUB(now(),INTERVAL 1 MONTH),'%Y%m') 取得上个月的日期格式
+10.mysql where name REGEXP 正则表达式
+11.SQL：select * from hilizi_news_tag_log where record_time = DATE_FORMAT(now(),'%Y%m') or record_time = DATE_FORMAT(DATE_SUB(now(),INTERVAL 1 MONTH),'%Y%m')
+12.select news_tag_log_id,sum(num) as 'num' from hilizi_news_tag_log where record_time = DATE_FORMAT(now(),'%Y%m') or record_time = DATE_FORMAT(DATE_SUB(now(),INTERVAL 1 MONTH),'%Y%m') group by record_time ORDER BY `num` DESC 

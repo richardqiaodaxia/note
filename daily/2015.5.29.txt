@@ -1,0 +1,16 @@
+﻿1.php作用域 函数变量 和 全局变量 完全隔离 无法互相访问
+2.只要不是function 中 或 class 中的变量 都是global变量
+3.类型转换的目的 一般是去掉可能存在的字符 比如 $a = '40m'; $b = intval($a) ; $b = 40;
+4.regist_shutdown_function() 执行一个执行完程序（脚本超时，中止,顺利完成）的函数
+5.mysql_connect()
+6.^ 以什么什么开始 如果在[]中是除了的意思
+7.正则表达式 点 匹配除"\r\n"之外的字符
+8.mysql_set_charset()设置字符集
+9.mysqli_fetch_array
+10.mysqli_select_db
+11.用global的问题是找不到在哪声明的
+12.php js的作用域不受{}影响
+13.导致隐式转换的因素：1.直接给变量赋值 2.运算
+14.unset 是一种类型转换 转换成NULL类型
+15. == 如果比较一个数字和字符串或者比较涉及到数字内容的字符串，则字符串会被转换为数值并且比较按照数值来进行
+"sdfsdf" == 0 会返回 true 因为(int)"sdfsdf" 等于 0

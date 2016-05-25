@@ -1,0 +1,32 @@
+1.hilizi_news_tag增加字段
+ALTER TABLE `hilizi_news_tag` ADD `keywords` VARCHAR(1000) NOT NULL COMMENT '标签映射的关键字,关键字之间用英文逗号分割' ;
+系统需要更新缓存
+
+--
+-- Database: `gywb`
+--
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `hilizi_push_log`
+--
+
+CREATE TABLE IF NOT EXISTS `hilizi_push_log` (
+  `log_id` int(11) NOT NULL AUTO_INCREMENT,
+  `article_id` int(11) NOT NULL COMMENT '推送的文章ID',
+  `article_title` varchar(80) NOT NULL COMMENT '推送的文章标题',
+  `system` int(11) NOT NULL COMMENT '推送的目标系统{1:安卓,2:ios}',
+  `result` int(11) NOT NULL COMMENT '推送的结果{0:失败,1:成功}',
+  `executor` varchar(80) NOT NULL COMMENT '推送者',
+  `time` int(11) NOT NULL COMMENT '推送时间',
+  PRIMARY KEY (`log_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=25 ;
+----最新------------------------------------------------------------------------------------------------------------------
+
+tag 加siteid smallint(5)-f
+tag_log 去 num字段-f
+tag 去name的唯一约束-f
+添加表log_stat-f
+----最新------------------------------------------------------------------------------------------------------------------pu
+push_log 加siteid 默认值是1

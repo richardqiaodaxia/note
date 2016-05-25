@@ -1,0 +1,7 @@
+﻿1.htmlspecialchars转换<>'"&
+2.注释在逻辑比较复杂的时候写
+3.mysql可以用between and 可以深入研究
+4.mysql 数据类型转换
+5.当php.exe失效的时候 有可能是php.ini配置不对
+6.set_time_limit(30) 在运行到这行代码后,代码还能运行30秒 
+7.不要增加隐式规范

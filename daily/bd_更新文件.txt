@@ -1,0 +1,32 @@
+phpcms 系统
+1.操作延时功能
+modules/comment/classes/comment.class.php(更改)
+2.一键排版功能
+js/ckeditor/plugins/autoformat文件夹(新增)
+js/ckeditor/plugins/video/plugin.js(更改)
+js/ckeditor/config.js(更改)
+phpcms/libs/classes/form.class.php(更改)
+3.搜索
+
+ecmall系统
+1.去掉商城价
+external/widgets/QQ_GoodsList/widget.html--暂时去掉
+external/widgets/sn_floor/widget.html--暂时去掉
+themes/store/default/goodsinfo.html--暂时去掉
+2.上传图片1:1平铺
+includes/libraries/image.func.php--暂时去掉
+includes/libraries/image.lib.php--暂时去掉
+3.自动升级成会员
+3-1 用户注册后自动升级为会员
+app/member.app.php
+3-2 已注册普通用户登录后自动升级为会员
+app/frontend.base.php
+4.会员通知
+是站内短消息，不是手机短信，但是依然没发现问题。
+5.订单问题
+卖家后台->订单管理
+6.总成交额修改
+
+
+
+  

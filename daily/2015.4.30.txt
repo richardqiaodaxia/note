@@ -1,0 +1,1 @@
+﻿1.stripslashes() 函数删除由 addslashes() 函数添加的反斜杠。

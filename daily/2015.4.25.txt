@@ -1,0 +1,100 @@
+1.explain显示了mysql如何使用索引来处理select语句以及连接表
+	table：显示这一行的数据是关于哪张表的
+	type：这是重要的列，显示连接使用了何种类型。从最好到最差的连接类型为const、eq_reg、ref、range、indexhe和ALL
+	possible_keys：显示可能应用在这张表中的索引。如果为空，没有可能的索引。可以为相关的域从WHERE语句中选择一个合适的语句
+	key： 实际使用的索引。如果为NULL，则没有使用索引。很少的情况下，MYSQL会选择优化不足的索引。这种情况下，可以在SELECT语句中使用USE INDEX（indexname）来强制使用一个索引或者用IGNORE INDEX（indexname）来强制MYSQL忽略索引
+	key_len：使用的索引的长度。在不损失精确性的情况下，长度越短越好
+	ref：显示索引的哪一列被使用了，如果可能的话，是一个常数
+	rows：MYSQL认为必须检查的用来返回请求数据的行数
+	Extra：关于MYSQL如何解析查询的额外信息。将在表4.3中讨论，但这里可以看到的坏的例子是Using temporary和Using filesort，意思MYSQL根本不能使用索引，结果是检索会很慢
+2.可以在SELECT语句中使用USE INDEX（indexname）来强制使用一个索引或者用IGNORE INDEX（indexname）来强制MYSQL忽略索引
+3.什么列适合加索引
+l         在什么列上添加索引比较合适
+     在经常查询的列上加索引.
+     列的数据，内容就只有少数几个值,不太适合加索引.
+     内容频繁变化，不合适加索引
+l         索引的种类
+主键索引 (把某列设为主键，则就是主键索引)
+唯一索引(unique) （即该列具有唯一性，同时又是索引）
+index （普通索引）
+全文索引(FULLTEXT)
+4.创建符合索引 create index myind on 表名 (列1,列2);
+5.show indexes from 表名 
+6.var_export — 输出或返回一个变量的字符串表示
+7.imagecreatetruecolor — 新建一个真彩色图像
+resource imagecreatetruecolor ( int $width , int $height )
+imagecreatetruecolor() 返回一个图像标识符，代表了一幅大小为 x_size 和 y_size 的黑色图像。
+是否定义了本函数取决于 PHP 和 GD 的版本。从 PHP 4.0.6 到 4.1.x 只要加载了 GD 模块本函数一直存在，但是在没有安装 GD2 的时候调用，PHP 将发出致命错误并退出。在 PHP 4.2.x 中此行为改为发出警告而不是错误。其它版本只在安装了正确的 GD 版本时定义了本函数。
+8.imagecolorallocate — 为一幅图像分配颜色
+int imagecolorallocate ( resource $image , int $red , int $green , int $blue )
+imagecolorallocate() 返回一个标识符，代表了由给定的 RGB 成分组成的颜色。red，green 和 blue 分别是所需要的颜色的红，绿，蓝成分。这些参数是 0 到 255 的整数或者十六进制的 0x00 到 0xFF。imagecolorallocate() 必须被调用以创建每一种用在 image 所代表的图像中的颜色。
+9.hexdec — 十六进制转换为十进制
+10.		//画一个柜形，设置背景颜色。
+		imagefilledrectangle($this->img,0, $this->height, $this->width, 0, $background)
+11.rmdir
+12.局域网内连接MySQL
+在局域网内连接MySQL首先要给MySQL开启远程连接的功能，在MySQL服务器上MySQL命令行执行以下命令：
+Sql代码
+grant all privileges on *.* to root@"%" identified by '123' with grant option;
+flush privileges;
+它的意思是给从任意ip地址连接的用户名为root，密码为123的用户赋予所有的权限。其中的"%"为任意的ip地址，如果想设为特定的值也可以设定为特定的值。
+执行了该语句后就可以在其他机器上以root:123访问到该机器上了
+13.在httpd.conf中的主要配置是以下几个：
+1、LoadModule：在httpd.conf中查找LoadModul，你会看见很多，然后在那些之后再加一行 LoadModule php5_module C:/php5/php5apache2_2.dll（PS：这里假设php的安装路径是C:/php5）
+2、找到DirectoryIndex这一部分，在后面加上：DirectoryIndex index.php index.htm index.html
+3、查找AddType application，在后面加上：AddType application/x-httpd-php .php
+4、查找PHPIniDir，这个是php.ini文件存放的路径，一般就设置你的php安装路径即可，如 "C:/php5"，这里请确认一下在你的php安装目录中是否存在php.ini这个文件。如果没有这个文件，在php安装目录中应该会有一个以php.ini开头的其他文件，可以将其重新命名为php.ini即可。
+到这里其实就配置差不多了，重启一下apache，然后在apache的服务器目录中用记事本写一段：
+<?php
+phpinfo();
+?>
+将其保存为test.php，然后用浏览器访问一下看看
+14.PHP总共有4个配置指令作用域：（PHP中的每个指令都有自己的作用域，指令只能在其作用域中修改，不是任何地方都能修改配置指令的）
+PHP_INI_PERDIR：指令可以在php.ini、httpd.conf或.htaccess文件中修改
+PHP_INI_SYSTEM：指令可以在php.ini 和 httpd.conf 文件中修改
+PHP_INI_USER：指令可以在用户脚本中修改
+PHP_INI_ALL：指令可以在任何地方修改
+15.一个是Session数据，该数据默认情况下是存放在服务器的tmp文件下的，是以文件形式存在
+另一个是标志着Session数据的Session Id，Session ID，就是那个 Session 文件的文件名，Session ID 是随机生成的，因此能保证唯一性和随机性，确保 Session 的安全。一般如果没有设置 Session 的生存周期，则 Session ID 存储在内存中，关闭浏览器后该 ID 自动注销，重新请求该页面后，重新注册一个 session ID。如果客户端没有禁用 Cookie，则 Cookie 在启动 Session 会话的时候扮演的是存储 Session ID 和 Session 生存期的角色。
+两个不同的域名网站，想用同一个Session，就是牵扯到Session跨域问题！
+16.今天，做项目时候遇到个问题。之前做东西的时候session一般就直接存在数据库中这样就能解决跨域
+
+不仅仅是跨子域，但是今天遇到这个问题是，自己要在别人现有的东西上面做修改。由于仅仅是子域
+
+当时就行肯定有简单的解决方法，度娘了10多分钟搞定：
+
+Session主要分两部分：
+一个是Session数据，该数据默认情况下是存放在服务器的tmp文件下的，是以文件形式存在
+另一个是标志着Session数据的Session Id，Session ID，就是那个 Session 文件的文件名，Session ID 是随机生成的，因此能保证唯一性和随机性，确保 Session 的安全。一般如果没有设置 Session 的生存周期，则 Session ID 存储在内存中，关闭浏览器后该 ID 自动注销，重新请求该页面后，重新注册一个 session ID。如果客户端没有禁用 Cookie，则 Cookie 在启动 Session 会话的时候扮演的是存储 Session ID 和 Session 生存期的角色。
+两个不同的域名网站，想用同一个Session，就是牵扯到Session跨域问题！
+默认情况下，各个服务器会各自分别对同一个客户端产生 SESSIONID，如对于同一个用户浏览器，A 服务器产生的 SESSION ID 是 11111111111，而B 服务器生成的则是222222。另外，PHP 的 SESSION数据都是分别保存在本服务器的文件系统中。想要共享 SESSION 数据，那就必须实现两个目标：
+一个是各个服务器对同一个客户端产生的SESSION ID 必须相同，并且可通过同一个 COOKIE 进行传递，也就是说各个服务器必须可以读取同一个名为 PHPSESSID 的COOKIE；另一个是 SESSION 数据的存储方式/位置必须保证各个服务器都能够访问到。这两个目标简单地说就是多服务器(A、B服务器)共享客户端的 SESSION ID，同时还必须共享服务器端的 SESSION 数据。
+
+有三种解决方法：
+1.只要在php页面的最开始（要在任何输出之前，并且在session_start()之前）的地方进行以下设置
+ini_set('session.cookie_path', '/');
+
+ ini_set('session.cookie_domain', '.mydomain.com');
+
+ ini_set('session.cookie_lifetime', '1800');
+
+2.在php.ini里设置
+
+ session.cookie_path = /
+session.cookie_domain = .mydomain.com
+
+ session.cookie_lifetime = 1800
+
+3.在php页面最开始的地方（条件同1）调用函数
+
+session_set_cookie_params(1800 , '/', '.mydomain.com');
+
+我的解决方法是在入口出添加如下代码：
+
+ini_set('session.cookie_path', '/');
+
+ ini_set('session.cookie_domain', '.domain.com'); //注意domain.com换成你自己的域名
+
+ini_set('session.cookie_lifetime', '1800');
+
+如图：

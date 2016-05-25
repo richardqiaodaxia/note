@@ -1,0 +1,3 @@
+﻿1.max_file_uploads 最多上传多少个文件
+upload_max_filesize 最大能上传多大的文件
+2.三处编码：数据库编码、php程序编码、网页显示编码

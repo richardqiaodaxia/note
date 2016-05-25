@@ -1,0 +1,1 @@
+﻿1.mysql_connect() mysql_select_db() mysql_fecth_array() mysql_query(); 已废弃

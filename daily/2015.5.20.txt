@@ -1,0 +1,9 @@
+﻿1.数据不经常更新，就可以考虑用缓存
+2.public function &getA(){} $a =& getA();单例 当$a->b =3;$b =& getA(); $b->b 的结果也是3
+3.去掉index.php
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
+</IfModule>

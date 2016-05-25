@@ -1,0 +1,14 @@
+1.
+Q:mysql数据库的多余是怎么生成的?
+A:是myisam表中被删除的数据没有真正的清空，只是在那里做个标记这行是删除的数据大小。 运行optimize table后会删去那些行。就不会出现了
+2.Q:max()
+A:max(x,y) 返回较大的一个值
+3.eval()
+Q:但是eval()对于php安全来说具有很大的杀伤力，因此一般不用的情况下为了防止类似如下的一句话木马入侵，需要禁止！
+4.php写在html中
+<script language="JavaScript" src="http://localhost/bdcb/api.php?op=behavior&userid=&id=37546&birthday=&sex=&type=article"></script>
+5.time() 函数返回当前时间的 Unix 时间戳。
+6.Ajax请求默认的都是异步的 ，使用$.post和$.get 的时候都是异步模式的。
+7.sleep() 函数延迟代码执行若干秒。
+8.用户输入的一般都要验证9
+9.Array end() 函数将数组内部指针指向最后一个元素，并返回该元素的值（如果成功）。

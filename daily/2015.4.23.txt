@@ -1,0 +1,6 @@
+1.修改php.ini位置 在apache下的httpd.conf中添加 PHPIniDir "path/to/file"( PHPIniDir "D:/apache2/bin/php.ini")
+2. 据说系统会以下面的顺序查找php.ini的路径：
+conf\httpd.conf的PhpIniDir配置
+注册表键regedit值HKEY_LOCAL_MACHINE\SOFTWARE\PHP\IniFilePath
+当前工作目录(CLI)
+网站服务器WWW目录(SAPI)，或PHP目录
