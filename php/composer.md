@@ -1,5 +1,6 @@
 #1.env require 
 1.php version > 5.5.9
+
 2.vpn allow connect foreign internet
 #2.install composer 
 
@@ -10,6 +11,7 @@
 
 #3.change env
 1.mv composer.phar /usr/local/bin/composer
+
 2.sudo chown qiaolx.qiaolx /home/qiaolx/.composer/cache -R
 
 #4.install composer repo
